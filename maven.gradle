@@ -22,8 +22,12 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 def isSnapshot = version.endsWith('-SNAPSHOT')
+
+def repoUrl = hasProperty('repoUrl') ? repoUrl : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+def snapshotsRepoUrl = hasProperty('snapshotsRepoUrl') ? snapshotsRepoUrl : "https://oss.sonatype.org/content/repositories/snapshots/"
 def ossrhUsername = hasProperty('ossrhUsername') ? ossrhUsername : ""
 def ossrhPassword = hasProperty('ossrhPassword') ? ossrhPassword : ""
+def versionSuffix = hasProperty('versionSuffix') ? versionSuffix : ""
 
 task setVersion {
     // The version will be derived from source
@@ -39,17 +43,20 @@ task setVersion {
     if (project.version.is('unspecified')) {
         throw new GradleScriptException('Version could not be found.', null)
     }
+    if (!versionSuffix.isEmpty()) {
+        project.version += "-$versionSuffix"
+    }
 }
 
 uploadArchives {
     repositories.mavenDeployer {
         beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        repository(url: repoUrl) {
             authentication(userName: ossrhUsername, password: ossrhPassword)
         }
 
-        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+        snapshotRepository(url: snapshotsRepoUrl) {
             authentication(userName: ossrhUsername, password: ossrhPassword)
         }
 
