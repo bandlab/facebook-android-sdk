@@ -1,3 +1,6 @@
+[DEPRECATED] Fork of Facebook SDK with support of AndroidX (see branch androidx-migration-publishing), not needed anymore, Facebook SDK 9+ support it out of the box
+=======
+
 Facebook SDK for Android
 ========================
 
